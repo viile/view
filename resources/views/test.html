@@ -1,5 +1,21 @@
-If an identity assignment overload is required and does not exist, an identity assignment overload function of the type ref S opAssign(ref S) will be automatically generated.
-
-A user-defined one can implement the equivalent semantics, but can be more efficient.
-
-One reason a custom opAssign might be more efficient is if the struct has a reference to a local buffer:
+<html>
+<head>
+	<title>{{var.title}}</title>
+</head>
+<body>
+	<h1> hello,{{var.name}} &nbsp; </h1>
+	{% if (var.name.length > 5){ %}
+		your name length is {{ var.name.length.to!string }}
+	{% } %}
+	<hr>
+	<table>
+	{%  foreach(string[string] value; var.data) { %}
+		<tr>
+			<td>{{value["id"]}}</td>
+			<td>{{value["name"]}}</td>
+			<td>{{value["time"]}}</td>
+		</tr>
+	{%  }  %}
+	</table>
+</body>
+</html>
