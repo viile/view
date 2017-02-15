@@ -34,73 +34,71 @@ class VariableReference : Expression
 	}
 	override public string Evaluate(Variant[string] vars)
 	{
-		return vars[name].to!string;
+		//return vars[name].to!string;
+		return name;
+	}
+}
+class ExecuteBlock : Expression
+{
+	public string name;
+	public this(string name)
+	{
+		this.name = name;
+	}
+	override public string Evaluate(Variant[string] vars)
+	{
+		//return vars[name].to!string;
+		return name;
 	}
 }
 class Operation : Expression
 {
 	public Expression left;
-	public string op;
+	public string label;
 	public Expression right;
-	public this(Expression left,string op,Expression right)
+	public this(Expression left,string label,Expression right)
 	{
 		this.left = left;
-		this.op = op;
+		this.label = label;
 		this.right = right;
 	}
-	override public float Evaluate(Variant[string] vars)  
+	override public string Evaluate(Variant[string] vars)  
 	{  
 		auto x = left.Evaluate(vars);  
 		auto y = right.Evaluate(vars);  
-		return x ~ y;  
+		return x ~ this.label ~ y;  
 	}  
 }
 Expression strToTree(string str,int s,int t)
 {
-	while (s <= t && str[s] == '(' && str[t] == ')')
+	writeln("s : ",s," t : ",t);
+	if(s > t)return new Constant(null);
+	
+	bool findVar = false;
+	bool findExe = false;
+	int ves,vet;
+	for(int i = s;i<t;i++)
 	{
-		s++; 
-		t--;
+		if(canFind(["{{","{%"],str[i..i+2]))
+		{
+			ves = i;
+			if(str[i+1] == '{') findVar = true;
+			else findExe = true;
+			for(int k = i;k<t;k++)
+			{
+				if(canFind(["}}","%}"],str[k..k+2]))
+				{
+					vet = k+2;
+					break;
+				}
+			}
+			break;
+		}
 	}
-	if(s > t) return new Constant(0);
-	bool findLetter = false;
-	bool findChar = false;  
-	int brackets = 0;  
-	int lastPS = -1;
-	int lastMD = -1; 
-	for (int i = s;i<=t;i++)
-	{
-		if (str[i] != '.' && (str[i]<'0' || str[i]>'9'))  
-		{  
-			if ((str[i] >= 'a' &&str[i] <= 'z') || (str[i] >= 'A'&&str[i] <= 'Z'))  
-				findLetter = true;  
-			else  
-			{  
-				findChar = true;  
-				final switch (str[i])  
-				{  
-					case '(':brackets++; break;  
-					case ')':brackets--; break;  
-					case '+':  
-					case '-':if (!brackets)lastPS = i; break;  
-					case '*':  
-					case '/':if (!brackets)lastMD = i; break;  
-				}  
-			}  
-		} 
-	}
-	auto ops = ["+","-","*","/"];
-	int ts = s;
-	while(ts <= t)
-	{
-		if(canFind(ops,str[ts].to!string))break;
-		ts++;
-	}
-	if (findLetter == false && findChar == false)  
-		return new Constant(str[s .. ts ].to!float);  
-	if (findChar == false)
-		return new VariableReference(str[s.. ts]);  
-	if (lastPS == -1)  
-		lastPS = lastMD;  
-	return new Operation(strToTree(str, s, lastPS - 1 ), str[lastPS], strToTree(str, lastPS + 1,t));
+	writeln("ves: ",ves," vet:",vet," findExe: ",findExe," findVar:",findVar);
+	writeln(ves?str[ves .. vet]:str[s..t]);
+	if(ves==0 && !findVar && !findExe)return new Constant(str[s..t]);
+	if(findVar && ves==s)return new VariableReference(str[ves .. vet]);
+	if(findExe && ves==s)return new ExecuteBlock(str[ves .. vet]);
+	return new Operation(strToTree(str,s,ves),str[ves .. vet],strToTree(str,vet,t));
 }

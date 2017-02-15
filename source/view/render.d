@@ -1,5 +1,6 @@
 module view.render;
 
+import std.stdio;
 import std.conv;
 
 import view;
@@ -36,6 +37,7 @@ struct CompiledTemple
 	
 	void display(Context ct)
 	{
-	
+		auto p = strToTree(this.ts,0,this.ts.length.to!int - 1);
+		writeln(p.Evaluate(ct.vars));
 	}
 }

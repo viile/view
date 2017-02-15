@@ -9,7 +9,7 @@ import view;
 
 class Context
 {
-	private Variant[string] vars;
+	public Variant[string] vars;
 
 	void opDispatch(string name, T)(T val)
 	{
