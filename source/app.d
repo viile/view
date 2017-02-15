@@ -25,5 +25,5 @@ void main()
 	];
 
 	auto ct = compile_temple_file!"test.html"();
-	ct.display(c);
+	//writeln(ct.display(c));
 }

@@ -22,22 +22,19 @@ CompiledTemple compile_temple_file(string template_file, Filter = void)()
 CompiledTemple compile_temple(string __TempleString, string __TempleName, __Filter = void)()
 {
 	pragma(msg, "Compiling ",__TempleString);
-	return CompiledTemple(__TempleString);
+	const __tsf = strToFunstr(__TempleString); 
+	pragma(msg, "__tsf ",__tsf);
+	mixin(__tsf);
+	return CompiledTemple();
 }
 
 struct CompiledTemple
 {
 	private string ts;
-	this(string __TempleString)
-	{
-		this.ts = __TempleString;
-	}
 
 	public:
-	
-	void display(Context ct)
+	string display()
 	{
-		auto p = strToTree(this.ts,0,this.ts.length.to!int - 1);
-		writeln(p.Evaluate(ct.vars));
+		return ts;
 	}
 }

@@ -35,7 +35,7 @@ class VariableReference : Expression
 	override public string Evaluate(Variant[string] vars)
 	{
 		//return vars[name].to!string;
-		return name;
+		return this.name;
 	}
 }
 class ExecuteBlock : Expression
@@ -71,7 +71,7 @@ class Operation : Expression
 }
 Expression strToTree(string str,int s,int t)
 {
-	writeln("s : ",s," t : ",t);
+	//writeln("s : ",s," t : ",t);
 	if(s > t)return new Constant(null);
 	
 	bool findVar = false;
@@ -95,10 +95,20 @@ Expression strToTree(string str,int s,int t)
 			break;
 		}
 	}
-	writeln("ves: ",ves," vet:",vet," findExe: ",findExe," findVar:",findVar);
-	writeln(ves?str[ves .. vet]:str[s..t]);
+	//writeln("ves: ",ves," vet:",vet," findExe: ",findExe," findVar:",findVar);
+	//writeln(ves?str[ves .. vet]:str[s..t]);
 	if(ves==0 && !findVar && !findExe)return new Constant(str[s..t]);
-	if(findVar && ves==s)return new VariableReference(str[ves .. vet]);
-	if(findExe && ves==s)return new ExecuteBlock(str[ves .. vet]);
-	return new Operation(strToTree(str,s,ves),str[ves .. vet],strToTree(str,vet,t));
+	if(findVar && ves==s)return new VariableReference(str[ves+2 .. vet-2]);
+	if(findExe && ves==s)return new ExecuteBlock(str[ves+2 .. vet-2]);
+	return new Operation(strToTree(str,s,ves),str[ves+2 .. vet-2],strToTree(str,vet,t));
+}
+
+package string strToFunstr(string str)
+{
+	auto s = strToTree(str,0,str.length.to!int - 1);
+	Variant[string] vars;
+	string ret = `void TempleFunc(){`;
+	ret ~= "string _s = `" ~ s.Evaluate(vars) ~ "`;";
+	ret ~= `}`;
+	return ret;
 }
