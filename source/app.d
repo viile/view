@@ -6,7 +6,7 @@ import view.parse;
 
 void main()
 {
-	Context c = new Context();
+	ViewContext c = new ViewContext();
 	c.name = "viile dev";
 	c.title = "index";
 	c.data = [
@@ -25,5 +25,7 @@ void main()
 	];
 
 	auto ct = compile_temple_file!"test.html"();
-	//writeln(ct.display(c));
+	writeln(ct.display(c));
+	//auto str = import("test.html");
+	//writeln(strToFunstr(str));
 }

@@ -1,16 +1,16 @@
 <html>
 <head>
-	<title>{{vars.title}}</title>
+	<title>{{var.title.to!string}}</title>
 </head>
 <body>
-	<h1> hello,{{vars.name}} &nbsp; </h1>
-	{% if (vars.name.length > 5){ %}
-		your name length is {{ vars.name.length.to!string }}
+	<h1> hello,{{var.name.to!string}} &nbsp; </h1>
+	{% if (var.name.length > 5){ %}
+		your name length is {{ var.name.length.to!string }}
 	{% } %}
 	<hr>
 	<table>
 	{% import std.array;  %}
-	{% foreach(string[string] value; vars.data) { %}
+	{% foreach(string[string] value; var.data) { %}
 		<tr>
 			<td>{{value["id"]}}</td>
 			<td>{{value["name"]}}</td>

@@ -7,7 +7,7 @@ import std.typetuple;
 
 import view;
 
-class Context
+class ViewContext
 {
 	public Variant[string] vars;
 

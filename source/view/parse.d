@@ -8,10 +8,11 @@ import std.array;
 import std.string;
 import std.typetuple;
 
+import view;
+
 abstract class Expression
 {
-	public Variant[string] vars;
-	public string Evaluate(Variant[string] vars);
+	public string Evaluate(ViewContext ctx);
 }
 class Constant : Expression
 {
@@ -20,53 +21,52 @@ class Constant : Expression
 	{
 		this.value = value;
 	}
-	override public string Evaluate(Variant[string] vars)
+	override public string Evaluate(ViewContext ctx)
 	{
-		return value;
+		return " str ~= `" ~ value ~ "`;";
 	}
 }
+
 class VariableReference : Expression
 {
-	public string name;
-	public this(string name)
+	public string value;
+	public this(string value)
 	{
-		this.name = name;
+		this.value = value;
 	}
-	override public string Evaluate(Variant[string] vars)
+	override public string Evaluate(ViewContext ctx)
 	{
-		//return vars[name].to!string;
-		return this.name;
+		return " str ~= " ~ value ~ ";";
 	}
 }
 class ExecuteBlock : Expression
 {
-	public string name;
-	public this(string name)
+	public string value;
+	public this(string value)
 	{
-		this.name = name;
+		this.value = value;
 	}
-	override public string Evaluate(Variant[string] vars)
+	override public string Evaluate(ViewContext ctx)
 	{
-		//return vars[name].to!string;
-		return name;
+		return value;
 	}
 }
 class Operation : Expression
 {
 	public Expression left;
-	public string label;
+	public Expression value;
 	public Expression right;
-	public this(Expression left,string label,Expression right)
+	public this(Expression left,Expression value,Expression right)
 	{
 		this.left = left;
-		this.label = label;
+		this.value = value;
 		this.right = right;
 	}
-	override public string Evaluate(Variant[string] vars)  
+	override public string Evaluate(ViewContext ctx)
 	{  
-		auto x = left.Evaluate(vars);  
-		auto y = right.Evaluate(vars);  
-		return x ~ this.label ~ y;  
+		auto x = left.Evaluate(ctx);  
+		auto y = right.Evaluate(ctx);  
+		return x ~ value.Evaluate(ctx) ~ y;  
 	}  
 }
 Expression strToTree(string str,int s,int t)
@@ -100,15 +100,26 @@ Expression strToTree(string str,int s,int t)
 	if(ves==0 && !findVar && !findExe)return new Constant(str[s..t]);
 	if(findVar && ves==s)return new VariableReference(str[ves+2 .. vet-2]);
 	if(findExe && ves==s)return new ExecuteBlock(str[ves+2 .. vet-2]);
-	return new Operation(strToTree(str,s,ves),str[ves+2 .. vet-2],strToTree(str,vet,t));
+	if(str[ves .. ves+2] == "{%")
+	return new Operation(strToTree(str,s,ves),new ExecuteBlock(str[ves+2 .. vet-2]),strToTree(str,vet,t));
+	else 
+	return new Operation(strToTree(str,s,ves),new VariableReference(str[ves+2 .. vet-2]),strToTree(str,vet,t));
 }
 
-package string strToFunstr(string str)
+string strToFunstr(string str)
 {
 	auto s = strToTree(str,0,str.length.to!int - 1);
-	Variant[string] vars;
-	string ret = `void TempleFunc(){`;
-	ret ~= "string _s = `" ~ s.Evaluate(vars) ~ "`;";
-	ret ~= `}`;
+	ViewContext ctx;
+	string ret = `
+		static string TempleFunc(ViewContext var)
+		{
+			string str;
+			with(var){
+
+	`;
+	ret ~= s.Evaluate(ctx);
+	ret ~= `}
+			return str;
+		}`;
 	return ret;
 }

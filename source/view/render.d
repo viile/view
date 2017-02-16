@@ -25,16 +25,20 @@ CompiledTemple compile_temple(string __TempleString, string __TempleName, __Filt
 	const __tsf = strToFunstr(__TempleString); 
 	pragma(msg, "__tsf ",__tsf);
 	mixin(__tsf);
-	return CompiledTemple();
+	alias temp_func = TempleFunc;
+	return CompiledTemple(&temp_func);
 }
 
 struct CompiledTemple
 {
-	private string ts;
-
-	public:
-	string display()
+	alias rend_func = string function(ViewContext) @system;
+	public rend_func rf = null;
+	this(rend_func rf)
 	{
-		return ts;
+		this.rf = rf;
+	}
+	string display(ViewContext ctx)
+	{
+		return this.rf(ctx);
 	}
 }
