@@ -1,14 +1,12 @@
 import std.stdio;
 
-import view.context;
-import view.render;
-import view.parse;
+import view;
 
 void main()
 {
 	ViewContext c = new ViewContext();
 	c.name = "viile dev";
-	c.title = "index";
+	c.title = 123;
 	c.data = [
 		[
 			"id" : "1",
@@ -26,6 +24,4 @@ void main()
 
 	auto ct = compile_temple_file!"test.html"();
 	writeln(ct.display(c));
-	//auto str = import("test.html");
-	//writeln(strToFunstr(str));
 }

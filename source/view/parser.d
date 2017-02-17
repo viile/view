@@ -1,4 +1,4 @@
-module view.parse;
+module view.parser;
 
 import std.stdio;
 import std.conv;
