@@ -12,7 +12,7 @@ import view;
 
 abstract class Expression
 {
-	public string Evaluate(ViewContext ctx);
+	public string Evaluate(ViewContext ctx = null);
 }
 class Constant : Expression
 {
@@ -21,7 +21,7 @@ class Constant : Expression
 	{
 		this.value = value;
 	}
-	override public string Evaluate(ViewContext ctx)
+	override public string Evaluate(ViewContext ctx = null )
 	{
 		return " str ~= `" ~ value ~ "`;";
 	}
@@ -34,7 +34,7 @@ class VariableReference : Expression
 	{
 		this.value = value;
 	}
-	override public string Evaluate(ViewContext ctx)
+	override public string Evaluate(ViewContext ctx = null)
 	{
 		return " str ~= " ~ value ~ ";";
 	}
@@ -46,7 +46,7 @@ class ExecuteBlock : Expression
 	{
 		this.value = value;
 	}
-	override public string Evaluate(ViewContext ctx)
+	override public string Evaluate(ViewContext ctx = null)
 	{
 		return value;
 	}
@@ -62,7 +62,7 @@ class Operation : Expression
 		this.value = value;
 		this.right = right;
 	}
-	override public string Evaluate(ViewContext ctx)
+	override public string Evaluate(ViewContext ctx = null)
 	{  
 		auto x = left.Evaluate(ctx);  
 		auto y = right.Evaluate(ctx);  
@@ -73,7 +73,7 @@ Expression strToTree(string str,int s,int t)
 {
 	//writeln("s : ",s," t : ",t);
 	if(s > t)return new Constant(null);
-	
+
 	bool findVar = false;
 	bool findExe = false;
 	int ves,vet;
@@ -101,25 +101,32 @@ Expression strToTree(string str,int s,int t)
 	if(findVar && ves==s)return new VariableReference(str[ves+2 .. vet-2]);
 	if(findExe && ves==s)return new ExecuteBlock(str[ves+2 .. vet-2]);
 	if(str[ves .. ves+2] == "{%")
-	return new Operation(strToTree(str,s,ves),new ExecuteBlock(str[ves+2 .. vet-2]),strToTree(str,vet,t));
+		return new Operation(strToTree(str,s,ves),new ExecuteBlock(str[ves+2 .. vet-2]),strToTree(str,vet,t));
 	else 
-	return new Operation(strToTree(str,s,ves),new VariableReference(str[ves+2 .. vet-2]),strToTree(str,vet,t));
+		return new Operation(strToTree(str,s,ves),new VariableReference(str[ves+2 .. vet-2]),strToTree(str,vet,t));
 }
 
-string strToFunstr(string str)
+class Parser 
 {
-	auto s = strToTree(str,0,str.length.to!int - 1);
-	ViewContext ctx;
-	string ret = `
-		static string TempleFunc(ViewContext var)
-		{
+	public string str;
+	public string FunHeader = `
+		static string TempleFunc(ViewContext var){
 			string str;
 			with(var){
-
 	`;
-	ret ~= s.Evaluate(ctx);
-	ret ~= `}
+	public string FunFooter = `
+			}
 			return str;
 		}`;
-	return ret;
+	public Expression stt = null;
+	public ViewContext ctx = null;
+	this(string str)
+	{
+		this.str = str;
+		this.stt = strToTree(str,0,str.length.to!int - 1);
+	}
+	string toString()
+	{
+		return FunHeader ~ stt.Evaluate(ctx) ~ FunFooter;
+	}
 }

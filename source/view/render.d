@@ -14,7 +14,7 @@ CompiledTemple compile_temple_file(string template_file, Filter = void)()
 CompiledTemple compile_temple(string __TempleString, string __TempleName, __Filter = void)()
 {
 	pragma(msg, "Compiling ",__TempleString);
-	const __tsf = strToFunstr(__TempleString); 
+	const __tsf = (new Parser(__TempleString)).toString; 
 	pragma(msg, "__tsf ",__tsf);
 	mixin(__tsf);
 	alias temp_func = TempleFunc;
@@ -25,12 +25,24 @@ struct CompiledTemple
 {
 	alias rend_func = string function(ViewContext) @system;
 	public rend_func rf = null;
+	//public CompiledTemple ct = null;
 	this(rend_func rf)
 	{
 		this.rf = rf;
 	}
-	string display(ViewContext ctx)
+	/*
+	this(rend_func rf , CompiledTemple ct)
+	{
+		this.rf = rf;
+		this.ct = ct;
+	}
+	*/
+	string toString(ViewContext ctx)
 	{
 		return this.rf(ctx);
+	}
+	CompiledTemple layout(CompiledTemple ct)
+	{
+		return CompiledTemple.init;
 	}
 }
