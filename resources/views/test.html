@@ -3,6 +3,7 @@
 	<title>{{var.title.to!string}}</title>
 </head>
 <body>
+	{{  render!"contentHeader.html" }}
 	<h1> hello,{{var.name.to!string}} &nbsp; </h1>
 	{% if (var.name.length > 5){ %}
 		your name length is {{ var.name.length.to!string }}
@@ -19,5 +20,6 @@
 		</tr>
 	{%  }  %}
 	</table>
+	{{  render!"contentFooter.html" }}
 </body>
 </html>

@@ -22,6 +22,6 @@ void main()
 		]
 	];
 
-	auto ct = compile_temple_file!"test.html"();
+	auto ct = display!"test.html"();
 	writeln(ct.toString(c));
 }

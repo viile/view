@@ -111,6 +111,13 @@ class Parser
 	public string str;
 	public string FunHeader = `
 		static string TempleFunc(ViewContext var){
+			string render(string _view_file)(){
+				return render_with!_view_file(var);
+			}
+			string render_with(string _view_file)(ViewContext var = null){
+				auto r = display!(_view_file)();
+				return r.toString(var);
+			}
 			string str;
 			with(var){
 	`;

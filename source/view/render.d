@@ -5,6 +5,9 @@ import std.conv;
 
 import view;
 
+alias display = compile_temple;
+alias display = compile_temple_file;
+
 CompiledTemple compile_temple_file(string template_file, Filter = void)()
 {
 	pragma(msg, "Compiling ", template_file, "...");
