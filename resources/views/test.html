@@ -1,12 +1,12 @@
 <html>
 <head>
-	<title>{{var.title.to!string}}</title>
+	<title>{{ var.title }}</title>
 </head>
 <body>
 	{{  render!"contentHeader.html" }}
-	<h1> hello,{{var.name.to!string}} &nbsp; </h1>
+	<h1> hello,{{var.name}} &nbsp; </h1>
 	{% if (var.name.length > 5){ %}
-		your name length is {{ var.name.length.to!string }}
+		your name length is {{ var.name.length }}
 	{% } %}
 	<hr>
 	{{ yield }}

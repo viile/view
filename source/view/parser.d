@@ -36,7 +36,7 @@ class VariableReference : Expression
 	}
 	override public string Evaluate(ViewContext ctx = null)
 	{
-		return " str ~= " ~ value ~ ";";
+		return " str ~= std.conv.to!string(" ~ value ~ ");";
 	}
 }
 class ExecuteBlock : Expression

@@ -16,11 +16,12 @@ class ViewContext
 	{
 		if (name !in vars)
 			vars[name] = Variant();
-
 		vars[name] = val;
 	}
 	Variant opDispatch(string name)()
 	{
-		return vars[name];	
+		if(name in vars)
+			return Variant(vars[name]);
+		return Variant.init;
 	}
 }
