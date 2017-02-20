@@ -1,0 +1,13 @@
+<div>	
+	<table>
+	{% import std.array;  %}
+	{% foreach(string[string] value; var.data) { %}
+		<tr>
+			<td>{{value["id"]}}</td>
+			<td>{{value["name"]}}</td>
+			<td>{{value["time"]}}</td>
+			<td>{% if(value["status"] == "1") { %} {{value["status"]}} {% } %}</td>
+		</tr>
+	{%  }  %}
+	</table>
+</div>

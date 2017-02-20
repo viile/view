@@ -9,6 +9,7 @@
 		your name length is {{ var.name.length.to!string }}
 	{% } %}
 	<hr>
+	{{ yield }}
 	<table>
 	{% import std.array;  %}
 	{% foreach(string[string] value; var.data) { %}

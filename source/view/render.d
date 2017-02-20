@@ -26,26 +26,24 @@ CompiledTemple compile_temple(string __TempleString, string __TempleName, __Filt
 
 struct CompiledTemple
 {
-	alias rend_func = string function(ViewContext) @system;
+	alias rend_func = string function(ViewContext,CompiledTemple* ct) @system;
 	public rend_func rf = null;
-	//public CompiledTemple ct = null;
+	public CompiledTemple* ct = null;
 	this(rend_func rf)
 	{
 		this.rf = rf;
 	}
-	/*
-	this(rend_func rf , CompiledTemple ct)
+	this(rend_func rf , CompiledTemple* ct)
 	{
 		this.rf = rf;
 		this.ct = ct;
 	}
-	*/
 	string toString(ViewContext ctx)
 	{
-		return this.rf(ctx);
+		return this.rf(ctx,this.ct);
 	}
-	CompiledTemple layout(CompiledTemple ct)
+	CompiledTemple layout(CompiledTemple* ct)
 	{
-		return CompiledTemple.init;
+		return CompiledTemple(rf,ct);
 	}
 }

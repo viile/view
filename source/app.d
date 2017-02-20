@@ -22,6 +22,8 @@ void main()
 		]
 	];
 
-	auto ct = display!"test.html"();
+	auto layout = display!"test.html"();
+	auto s = display!"user.html"();
+	auto ct = layout.layout(&s);
 	writeln(ct.toString(c));
 }

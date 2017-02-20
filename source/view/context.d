@@ -7,6 +7,7 @@ import std.typetuple;
 
 import view;
 
+alias TempleContext = ViewContext;
 class ViewContext
 {
 	public Variant[string] vars;
