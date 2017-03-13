@@ -71,7 +71,6 @@ class Operation : Expression
 }
 Expression strToTree(string str,int s,int t)
 {
-	//writeln("s : ",s," t : ",t);
 	if(s > t)return new Constant(null);
 
 	bool findVar = false;
@@ -95,8 +94,6 @@ Expression strToTree(string str,int s,int t)
 			break;
 		}
 	}
-	//writeln("ves: ",ves," vet:",vet," findExe: ",findExe," findVar:",findVar);
-	//writeln(ves?str[ves .. vet]:str[s..t]);
 	if(ves==0 && !findVar && !findExe)return new Constant(str[s..t]);
 	if(findVar && ves==s)return new VariableReference(str[ves+2 .. vet-2]);
 	if(findExe && ves==s)return new ExecuteBlock(str[ves+2 .. vet-2]);
@@ -128,15 +125,17 @@ class Parser
 			}
 			return str;
 		}`;
-	public Expression stt = null;
+	public Expression ast = null;
 	public ViewContext ctx = null;
 	this(string str)
 	{
 		this.str = str;
-		this.stt = strToTree(str,0,str.length.to!int - 1);
+		this.ast = strToTree(str,0,str.length.to!int - 1);
 	}
-	string toString()
+	override string toString()
 	{
-		return FunHeader ~ stt.Evaluate(ctx) ~ FunFooter;
+		return FunHeader ~ ast.Evaluate(ctx) ~ FunFooter;
 	}
+
 }
+
