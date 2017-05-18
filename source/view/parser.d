@@ -71,14 +71,14 @@ class Operation : Expression
 }
 Expression strToTree(string str,int s,int t)
 {
-	if(s > t)return new Constant(null);
-
+	if(s >= t)return new Constant(null);
+	//version(Debug){writeln(__FUNCTION__," ",__LINE__,"= s:",s," t:",t," str:",str[s..t]);}
 	bool findVar = false;
 	bool findExe = false;
 	int ves,vet;
 	for(int i = s;i<t;i++)
 	{
-		if(canFind(["{{","{%"],str[i..i+2]))
+		if((i+2 <= t ) && canFind(["{{","{%"],str[i..i+2]))
 		{
 			ves = i;
 			if(str[i+1] == '{') findVar = true;
@@ -94,9 +94,11 @@ Expression strToTree(string str,int s,int t)
 			break;
 		}
 	}
+	//version(Debug){writeln(__FUNCTION__," ",__LINE__,"= findVar:",findVar,
+	//		" findExe:",findExe," ves:",ves," vet:",vet);}
 	if(ves==0 && !findVar && !findExe)return new Constant(str[s..t]);
-	if(findVar && ves==s)return new VariableReference(str[ves+2 .. vet-2]);
-	if(findExe && ves==s)return new ExecuteBlock(str[ves+2 .. vet-2]);
+	if(findVar && ves==s && vet==t)return new VariableReference(str[ves+2 .. vet-2]);
+	if(findExe && ves==s && vet==t)return new ExecuteBlock(str[ves+2 .. vet-2]);
 	if(str[ves .. ves+2] == "{%")
 		return new Operation(strToTree(str,s,ves),new ExecuteBlock(str[ves+2 .. vet-2]),strToTree(str,vet,t));
 	else 
@@ -120,8 +122,8 @@ class Parser
 			}
 			string str;
 			with(var){
-	`;
-	public string FunFooter = `
+				`;
+				public string FunFooter = `
 			}
 			return str;
 		}`;
@@ -129,13 +131,21 @@ class Parser
 	public ViewContext ctx = null;
 	this(string str)
 	{
+		//version(Debug){writeln(__FUNCTION__," ",__LINE__,"= str:",str);}
 		this.str = str;
-		this.ast = strToTree(str,0,str.length.to!int - 1);
+		this.ast = strToTree(str,0,str.length.to!int );
 	}
 	override string toString()
 	{
 		return FunHeader ~ ast.Evaluate(ctx) ~ FunFooter;
 	}
 
+}
+
+
+unittest 
+{
+	auto p = new Parser(```{% import std.stdio; %}<div>{{value["name"]}}```);	
+	assert(p.ast.Evaluate() == " str ~= ``; import std.stdio;  str ~= `<div>`; str ~= std.conv.to!string(value[\"name\"]); str ~= ``;");
 }
 

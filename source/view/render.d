@@ -10,15 +10,15 @@ alias display = compile_temple_file;
 
 CompiledTemple compile_temple_file(string template_file, Filter = void)()
 {
-	pragma(msg, "Compiling ", template_file, "...");
+	//pragma(msg, "Compiling ", template_file, "...");
 	return compile_temple!(import(template_file), template_file, Filter);
 }
 
 CompiledTemple compile_temple(string __TempleString, string __TempleName, __Filter = void)()
 {
-	pragma(msg, "Compiling ",__TempleString);
+	//pragma(msg, "Compiling ",__TempleString);
 	const __tsf = (new Parser(__TempleString)).toString; 
-	pragma(msg, "__tsf ",__tsf);
+	//pragma(msg, "__tsf ",__tsf);
 	mixin(__tsf);
 	alias temp_func = TempleFunc;
 	return CompiledTemple(&temp_func);
