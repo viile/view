@@ -1,4 +1,15 @@
-module view.parser;
+/*
+ * Hunt - a framework for web and console application based on Collie using Dlang development
+ *
+ * Copyright (C) 2015-2017  Shanghai Putao Technology Co., Ltd
+ *
+ * Developer: HuntLabs
+ *
+ * Licensed under the Apache-2.0 License.
+ *
+ */
+
+module hunt.view.parser;
 
 import std.stdio;
 import std.conv;
@@ -8,7 +19,7 @@ import std.array;
 import std.string;
 import std.typetuple;
 
-import view;
+import hunt.view;
 
 abstract class Expression
 {
@@ -72,13 +83,14 @@ class Operation : Expression
 Expression strToTree(string str,int s,int t)
 {
 	if(s >= t)return new Constant(null);
-	//version(Debug){writeln(__FUNCTION__," ",__LINE__,"= s:",s," t:",t," str:",str[s..t]);}
+
 	bool findVar = false;
 	bool findExe = false;
 	int ves,vet;
+	static import std.algorithm;
 	for(int i = s;i<t;i++)
 	{
-		if((i+2 <= t ) && canFind(["{{","{%"],str[i..i+2]))
+		if((i+2 <= t) && canFind(["{{","{%"],str[i..i+2]))
 		{
 			ves = i;
 			if(str[i+1] == '{') findVar = true;
@@ -94,8 +106,6 @@ Expression strToTree(string str,int s,int t)
 			break;
 		}
 	}
-	//version(Debug){writeln(__FUNCTION__," ",__LINE__,"= findVar:",findVar,
-	//		" findExe:",findExe," ves:",ves," vet:",vet);}
 	if(ves==0 && !findVar && !findExe)return new Constant(str[s..t]);
 	if(findVar && ves==s && vet==t)return new VariableReference(str[ves+2 .. vet-2]);
 	if(findExe && ves==s && vet==t)return new ExecuteBlock(str[ves+2 .. vet-2]);
@@ -110,6 +120,7 @@ class Parser
 	public string str;
 	public string FunHeader = `
 		static string TempleFunc(ViewContext var,CompiledTemple* ct = null){
+			static import std.conv;
 			string render(string _view_file)(){
 				return render_with!_view_file(var);
 			}
@@ -127,25 +138,21 @@ class Parser
 			}
 			return str;
 		}`;
-	public Expression ast = null;
+	public Expression stt = null;
 	public ViewContext ctx = null;
 	this(string str)
 	{
-		//version(Debug){writeln(__FUNCTION__," ",__LINE__,"= str:",str);}
 		this.str = str;
-		this.ast = strToTree(str,0,str.length.to!int );
+		this.stt = strToTree(str,0,str.length.to!int);
 	}
 	override string toString()
 	{
-		return FunHeader ~ ast.Evaluate(ctx) ~ FunFooter;
+		return FunHeader ~ stt.Evaluate(ctx) ~ FunFooter;
 	}
-
 }
-
 
 unittest 
 {
-	auto p = new Parser(```{% import std.stdio; %}<div>{{value["name"]}}```);	
-	assert(p.ast.Evaluate() == " str ~= ``; import std.stdio;  str ~= `<div>`; str ~= std.conv.to!string(value[\"name\"]); str ~= ``;");
+	auto p = new Parser(```{% import std.stdio; %}<div>{{value["name"]}}```);
+	assert(p.stt.Evaluate() == " str ~= ``; import std.stdio;  str ~= `<div>`; str ~= std.conv.to!string(value[\"name\"]); str ~= ``;");
 }
-

@@ -7,6 +7,7 @@ void main()
 	ViewContext c = new ViewContext();
 	c.name = "viile dev";
 	c.title = 123;
+	c.num = "123";
 	c.data = [
 		[
 			"id" : "1",

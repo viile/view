@@ -12,13 +12,16 @@
 	<hr>
 	{{ yield }}
 	<table>
-	{% import std.array;  %}
+	{% import std.array;import std.conv;  %}
 	{% foreach(string[string] value; var.data) { %}
 		<tr>
 			<td>{{value["id"]}}</td>
 			<td>{{value["name"]}}</td>
 			<td>{{value["time"]}}</td>
-			<td>{% if(value["status"] == "1") { %} {{value["status"]}} {% } %}</td>
+			<td>
+                {% if(value["status"] == "1") { %} {{value["status"]}} {% } %}</td>
+                {% if(value["status"].to!string.to!int < var.num.to!string.to!int) { %} {{value["status"]}} {% } %}
+            </td>
 		</tr>
 	{%  }  %}
 	</table>
