@@ -1,15 +1,4 @@
-/*
- * Hunt - a framework for web and console application based on Collie using Dlang development
- *
- * Copyright (C) 2015-2017  Shanghai Putao Technology Co., Ltd
- *
- * Developer: HuntLabs
- *
- * Licensed under the Apache-2.0 License.
- *
- */
-
-module hunt.view.parser;
+module view.parser;
 
 import std.stdio;
 import std.conv;
@@ -19,7 +8,7 @@ import std.array;
 import std.string;
 import std.typetuple;
 
-import hunt.view;
+import view;
 
 abstract class Expression
 {
