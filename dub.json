@@ -1,11 +1,9 @@
 {
 	"name": "view",
-	"authors": [
-		"root"
-	],
-	"stringImportPaths": [ "./resources/views" ],
-	"description": "A minimal D application.",
+	"authors": ["viile"],
+    "targetType": "library",
+	"description": "Compile Time Embedded Template Parser/Generator for D",
 	"copyright": "Copyright © 2017, root",
-	"license": "proprietary",
+	"license": "Apache-2.0",
 	"versions":["Debug"]
 }
